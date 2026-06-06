@@ -1,0 +1,230 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Test API",
+    "description": "Лабораторная работа: тестирование JSONPlaceholder API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET Post by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/posts/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts", "1"]
+        },
+        "description": "Получение одного поста по ID"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response should contain userId\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property(\"userId\");",
+              "});",
+              "",
+              "pm.test(\"Content-Type is application/json\", function () {",
+              "    pm.response.to.have.header(\"Content-Type\", \"application/json; charset=utf-8\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET Posts with userId param",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/posts?userId=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts"],
+          "query": [
+            {
+              "key": "userId",
+              "value": "1"
+            }
+          ]
+        },
+        "description": "Получение постов с фильтром по userId"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response is an array\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "});",
+              "",
+              "pm.test(\"All posts belong to userId 1\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    jsonData.forEach(function(post) {",
+              "        pm.expect(post.userId).to.eql(1);",
+              "    });",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST Create Post",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Postman Test\",\n  \"body\": \"Testing API via Postman\",\n  \"userId\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/posts",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts"]
+        },
+        "description": "Создание нового поста"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test(\"Response should contain id\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property(\"id\");",
+              "});",
+              "",
+              "pm.test(\"Title should be Postman Test\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.title).to.eql(\"Postman Test\");",
+              "});",
+              "",
+              "pm.test(\"Content-Type is application/json\", function () {",
+              "    pm.response.to.have.header(\"Content-Type\", \"application/json; charset=utf-8\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "PUT Update Post",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": 1,\n  \"title\": \"Updated Title\",\n  \"body\": \"Updated Body\",\n  \"userId\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/posts/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts", "1"]
+        },
+        "description": "Обновление существующего поста"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Title was updated\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.title).to.eql(\"Updated Title\");",
+              "});",
+              "",
+              "pm.test(\"Body was updated\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.body).to.eql(\"Updated Body\");",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "DELETE Post",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/posts/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["posts", "1"]
+        },
+        "description": "Удаление поста"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://jsonplaceholder.typicode.com"
+    }
+  ]
+}

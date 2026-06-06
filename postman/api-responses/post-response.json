@@ -1,0 +1,7 @@
+{
+  "title": "Postman Test",
+  "body": "Testing API via Postman",
+  "userId": 1,
+  "id": 101
+}
+HTTP_STATUS:201
