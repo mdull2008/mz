@@ -1,0 +1,6 @@
+"Request","Method","URL","Status","Tests Passed","Tests Failed","Response Time (ms)"
+"GET Post by ID","GET","[object Object]","200","3","0","58"
+"GET Posts with userId param","GET","[object Object]","200","3","0","10"
+"POST Create Post","POST","[object Object]","201","4","0","20"
+"PUT Update Post","PUT","[object Object]","200","3","0","19"
+"DELETE Post","DELETE","[object Object]","200","1","0","11"
