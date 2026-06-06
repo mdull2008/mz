@@ -1,0 +1,41 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /workspace
+collecting ... collected 33 items
+
+unit_converter/tests/test_converter.py::test_meters_to_kilometers_correct PASSED [  3%]
+unit_converter/tests/test_converter.py::test_meters_to_kilometers_negative_raises PASSED [  6%]
+unit_converter/tests/test_converter.py::test_kilometers_to_meters_correct PASSED [  9%]
+unit_converter/tests/test_converter.py::test_kilometers_to_meters_negative_raises PASSED [ 12%]
+unit_converter/tests/test_converter.py::test_meters_to_centimeters_correct PASSED [ 15%]
+unit_converter/tests/test_converter.py::test_meters_to_centimeters_negative_raises PASSED [ 18%]
+unit_converter/tests/test_converter.py::test_centimeters_to_meters_correct PASSED [ 21%]
+unit_converter/tests/test_converter.py::test_centimeters_to_meters_negative_raises PASSED [ 24%]
+unit_converter/tests/test_converter.py::test_meters_to_millimeters_correct PASSED [ 27%]
+unit_converter/tests/test_converter.py::test_meters_to_millimeters_negative_raises PASSED [ 30%]
+unit_converter/tests/test_converter.py::test_millimeters_to_meters_correct PASSED [ 33%]
+unit_converter/tests/test_converter.py::test_millimeters_to_meters_negative_raises PASSED [ 36%]
+unit_converter/tests/test_converter.py::test_length_conversions_zero[meters_to_kilometers-0.0] PASSED [ 39%]
+unit_converter/tests/test_converter.py::test_length_conversions_zero[kilometers_to_meters-0.0] PASSED [ 42%]
+unit_converter/tests/test_converter.py::test_length_conversions_zero[meters_to_centimeters-0.0] PASSED [ 45%]
+unit_converter/tests/test_converter.py::test_length_conversions_zero[centimeters_to_meters-0.0] PASSED [ 48%]
+unit_converter/tests/test_converter.py::test_length_conversions_zero[meters_to_millimeters-0.0] PASSED [ 51%]
+unit_converter/tests/test_converter.py::test_length_conversions_zero[millimeters_to_meters-0.0] PASSED [ 54%]
+unit_converter/tests/test_converter.py::test_kilograms_to_grams_correct PASSED [ 57%]
+unit_converter/tests/test_converter.py::test_kilograms_to_grams_negative_raises PASSED [ 60%]
+unit_converter/tests/test_converter.py::test_grams_to_kilograms_correct PASSED [ 63%]
+unit_converter/tests/test_converter.py::test_grams_to_kilograms_negative_raises PASSED [ 66%]
+unit_converter/tests/test_converter.py::test_hours_to_minutes_correct PASSED [ 69%]
+unit_converter/tests/test_converter.py::test_hours_to_minutes_negative_raises PASSED [ 72%]
+unit_converter/tests/test_converter.py::test_minutes_to_hours_correct PASSED [ 75%]
+unit_converter/tests/test_converter.py::test_minutes_to_hours_negative_raises PASSED [ 78%]
+unit_converter/tests/test_converter.py::test_minutes_to_seconds_correct PASSED [ 81%]
+unit_converter/tests/test_converter.py::test_seconds_to_minutes_correct PASSED [ 84%]
+unit_converter/tests/test_converter.py::test_hours_to_seconds_correct PASSED [ 87%]
+unit_converter/tests/test_converter.py::test_seconds_to_hours_correct PASSED [ 90%]
+unit_converter/tests/test_converter.py::test_time_conversions_negative_raises PASSED [ 93%]
+unit_converter/tests/test_converter.py::test_parse_number_valid PASSED   [ 96%]
+unit_converter/tests/test_converter.py::test_parse_number_invalid_string PASSED [100%]
+
+============================== 33 passed in 0.03s ==============================
