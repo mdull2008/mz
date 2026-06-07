@@ -1,0 +1,26 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /workspace/pr_modul_test_Студент
+collecting ... collected 18 items
+
+test_student_utils.py::test_average_grade_basic PASSED                   [  5%]
+test_student_utils.py::test_average_grade_single_value PASSED            [ 11%]
+test_student_utils.py::test_average_grade_empty_list_raises PASSED       [ 16%]
+test_student_utils.py::test_is_passed_true PASSED                        [ 22%]
+test_student_utils.py::test_is_passed_false PASSED                       [ 27%]
+test_student_utils.py::test_is_passed_boundary PASSED                    [ 33%]
+test_student_utils.py::test_to_ects_valid PASSED                         [ 38%]
+test_student_utils.py::test_to_ects_invalid_raises PASSED                [ 44%]
+test_task1_even.py::test_is_even_for_even_numbers PASSED                 [ 50%]
+test_task1_even.py::test_is_even_for_odd_numbers PASSED                  [ 55%]
+test_task2_funcs.py::test_max_of_three_basic PASSED                      [ 61%]
+test_task2_funcs.py::test_max_of_three_equal_numbers PASSED              [ 66%]
+test_task2_funcs.py::test_max_of_three_negative_numbers PASSED           [ 72%]
+test_task2_funcs.py::test_max_of_three_most_negative_is_max PASSED       [ 77%]
+test_task2_funcs.py::test_sign_negative PASSED                           [ 83%]
+test_task2_funcs.py::test_sign_zero PASSED                               [ 88%]
+test_task2_funcs.py::test_sign_positive PASSED                           [ 94%]
+test_task2_funcs.py::test_sign_large_numbers PASSED                      [100%]
+
+============================== 18 passed in 0.03s ==============================
