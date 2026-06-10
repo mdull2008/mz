@@ -1,86 +1,110 @@
-﻿using LexicalAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using NumSharp;
 using Microsoft.ML;
 using Microsoft.ML.Data;
-using NumSharp;
 
-var mlContext = new MLContext(seed: 42);
-const string sentence = "как посеешь так и пожнешь";
-var tokens = sentence.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-Console.WriteLine("=== Лексический разбор предложения ===");
-Console.WriteLine($"Предложение: «{sentence}»");
-Console.WriteLine();
-
-// 1. NumSharp: представляем слова как NDArray-последовательности символов
-Console.WriteLine("--- NumSharp: кодирование слов в NDArray ---");
-var batchMatrix = CharEncoder.BatchToNDArray(tokens);
-Console.WriteLine($"Матрица признаков (форма {batchMatrix.shape}):");
-Console.WriteLine(batchMatrix.ToString());
-Console.WriteLine();
-
-foreach (var token in tokens)
+// класс для слова
+public class TokenData
 {
-  var charArray = CharEncoder.WordToNDArray(token);
-  var features = CharEncoder.WordToFeatures(token);
-  var chars = NDArray.AsString(charArray);
-  Console.WriteLine($"  {token,-10} → NDArray{charArray.shape} = \"{chars}\"");
-  Console.WriteLine($"  {"",-10}   признаки = [{string.Join(", ", features.Select(f => f.ToString("0")))}]");
+    public string Word { get; set; }
+    public string PartOfSpeech { get; set; }
 }
 
-Console.WriteLine();
-
-// 2. Подготовка обучающей выборки
-var trainingData = TrainingData.Create();
-IDataView dataView = mlContext.Data.LoadFromEnumerable(trainingData);
-
-// 3. Пайплайн ML.NET: признаки NumSharp + текстовые n-граммы
-var pipeline = mlContext.Transforms.Text.FeaturizeText(
-    outputColumnName: "WordFeaturized",
-    inputColumnName: nameof(TokenData.Word))
-  .Append(mlContext.Transforms.Concatenate(
-    "Features",
-    nameof(TokenData.CharFeatures),
-    "WordFeaturized"))
-  .Append(mlContext.Transforms.Conversion.MapValueToKey(
-    outputColumnName: "Label",
-    inputColumnName: nameof(TokenData.PartOfSpeech)))
-  .Append(mlContext.MulticlassClassification.Trainers.SdcaMaximumEntropy())
-  .Append(mlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
-
-Console.WriteLine("--- Обучение модели ML.NET ---");
-var model = pipeline.Fit(dataView);
-Console.WriteLine("Модель обучена!");
-Console.WriteLine();
-
-// 4. Лексический разбор каждого слова предложения
-var predictionEngine = mlContext.Model.CreatePredictionEngine<TokenData, TokenPrediction>(model);
-
-Console.WriteLine("--- Результат лексического разбора ---");
-Console.WriteLine($"{"Слово",-12} {"Часть речи",-18} {"Уверенность"}");
-Console.WriteLine(new string('-', 45));
-
-foreach (var token in tokens)
+// класс для ответа модели
+public class TokenPrediction : TokenData
 {
-  var input = new TokenData
-  {
-    Word = token,
-    CharFeatures = CharEncoder.WordToFeatures(token),
-  };
-
-  var prediction = predictionEngine.Predict(input);
-  var confidence = prediction.Scores.Length > 0 ? prediction.Scores.Max() : 0f;
-
-  Console.WriteLine($"{token,-12} {prediction.PredictedLabel,-18} {confidence:P1}");
+    public string PredictedLabel { get; set; }
 }
 
-Console.WriteLine();
-Console.WriteLine("Полный разбор:");
-Console.WriteLine(string.Join(" | ", tokens.Select(t =>
+class Program
 {
-  var p = predictionEngine.Predict(new TokenData
-  {
-    Word = t,
-    CharFeatures = CharEncoder.WordToFeatures(t),
-  });
-  return $"{t} ({p.PredictedLabel})";
-})));
+    static void Main(string[] args)
+    {
+        // наше предложение
+        string text = "как посеешь так и пожнешь";
+        string[] slova = text.Split(' ');
+
+        Console.WriteLine("Лексический разбор предложения");
+        Console.WriteLine("Предложение: " + text);
+        Console.WriteLine();
+
+        // словарь букв (номер буквы в строке)
+        string bukvy = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя ";
+
+        // показываем как NumSharp хранит слова
+        Console.WriteLine("Кодирование слов через NumSharp:");
+        for (int i = 0; i < slova.Length; i++)
+        {
+            NDArray massiv = NDArray.FromString(slova[i]);
+            Console.Write(slova[i] + " -> буквы: ");
+            for (int j = 0; j < slova[i].Length; j++)
+            {
+                Console.Write(bukvy.IndexOf(slova[i][j]) + " ");
+            }
+            Console.WriteLine();
+        }
+        Console.WriteLine();
+
+        // создаем ML
+        MLContext ml = new MLContext();
+
+        // учим модель на примерах
+        List<TokenData> data = new List<TokenData>();
+        data.Add(new TokenData { Word = "мама", PartOfSpeech = "СУЩЕСТВИТЕЛЬНОЕ" });
+        data.Add(new TokenData { Word = "мыла", PartOfSpeech = "ГЛАГОЛ" });
+        data.Add(new TokenData { Word = "раму", PartOfSpeech = "СУЩЕСТВИТЕЛЬНОЕ" });
+        data.Add(new TokenData { Word = "читала", PartOfSpeech = "ГЛАГОЛ" });
+        data.Add(new TokenData { Word = "дом", PartOfSpeech = "СУЩЕСТВИТЕЛЬНОЕ" });
+        data.Add(new TokenData { Word = "идет", PartOfSpeech = "ГЛАГОЛ" });
+        data.Add(new TokenData { Word = "как", PartOfSpeech = "НАРЕЧИЕ" });
+        data.Add(new TokenData { Word = "так", PartOfSpeech = "НАРЕЧИЕ" });
+        data.Add(new TokenData { Word = "и", PartOfSpeech = "СОЮЗ" });
+        data.Add(new TokenData { Word = "но", PartOfSpeech = "СОЮЗ" });
+        data.Add(new TokenData { Word = "очень", PartOfSpeech = "НАРЕЧИЕ" });
+        data.Add(new TokenData { Word = "быстро", PartOfSpeech = "НАРЕЧИЕ" });
+        data.Add(new TokenData { Word = "посеешь", PartOfSpeech = "ГЛАГОЛ" });
+        data.Add(new TokenData { Word = "пожнешь", PartOfSpeech = "ГЛАГОЛ" });
+        data.Add(new TokenData { Word = "сеять", PartOfSpeech = "ГЛАГОЛ" });
+        data.Add(new TokenData { Word = "пожинать", PartOfSpeech = "ГЛАГОЛ" });
+        data.Add(new TokenData { Word = "книга", PartOfSpeech = "СУЩЕСТВИТЕЛЬНОЕ" });
+        data.Add(new TokenData { Word = "стол", PartOfSpeech = "СУЩЕСТВИТЕЛЬНОЕ" });
+        data.Add(new TokenData { Word = "красивый", PartOfSpeech = "ПРИЛАГАТЕЛЬНОЕ" });
+        data.Add(new TokenData { Word = "большой", PartOfSpeech = "ПРИЛАГАТЕЛЬНОЕ" });
+        data.Add(new TokenData { Word = "он", PartOfSpeech = "МЕСТОИМЕНИЕ" });
+        data.Add(new TokenData { Word = "она", PartOfSpeech = "МЕСТОИМЕНИЕ" });
+
+        IDataView dataView = ml.Data.LoadFromEnumerable(data);
+
+        // настраиваем обучение
+        var ucheba = ml.Transforms.Text.FeaturizeText(
+                outputColumnName: "WordFeaturized",
+                inputColumnName: "Word")
+            .Append(ml.Transforms.Conversion.MapValueToKey(
+                outputColumnName: "Label",
+                inputColumnName: "PartOfSpeech"))
+            .Append(ml.MulticlassClassification.Trainers.SdcaMaximumEntropy(
+                featureColumnName: "WordFeaturized",
+                labelColumnName: "Label"))
+            .Append(ml.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
+
+        Console.WriteLine("Обучение модели...");
+        var model = ucheba.Fit(dataView);
+        Console.WriteLine("Готово!");
+        Console.WriteLine();
+
+        // разбираем каждое слово
+        var engine = ml.Model.CreatePredictionEngine<TokenData, TokenPrediction>(model);
+
+        Console.WriteLine("Результат:");
+        for (int i = 0; i < slova.Length; i++)
+        {
+            TokenData slovo = new TokenData();
+            slovo.Word = slova[i];
+
+            TokenPrediction otvet = engine.Predict(slovo);
+            Console.WriteLine(slova[i] + " - " + otvet.PredictedLabel);
+        }
+
+    }
+}
