@@ -1,14 +1,17 @@
 using ProjectBAnk.Models;
+using ProjectBAnk.Services;
 
 namespace ProjectBAnk;
 
 public partial class MainForm : Form
 {
     private BankAccount? _account;
+    private readonly FraudDetector _fraudDetector = new();
 
     public MainForm()
     {
         InitializeComponent();
+        txtLog.AppendText($"[{DateTime.Now:HH:mm:ss}] Нейросеть ML.NET загружена. Проверка мошенничества включена.{Environment.NewLine}");
     }
 
     private void btnCreate_Click(object sender, EventArgs e)
@@ -38,28 +41,52 @@ public partial class MainForm : Form
     private void btnDeposit_Click(object sender, EventArgs e)
     {
         if (!TryGetAmount(out var amount)) return;
-
-        try
-        {
-            _account!.Deposit(amount);
-            UpdateBalance();
-            txtLog.AppendText($"[{DateTime.Now:HH:mm:ss}] +{amount:F2} ₽ (пополнение){Environment.NewLine}");
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        }
+        ProcessOperation(amount, isWithdrawal: false);
     }
 
     private void btnWithdraw_Click(object sender, EventArgs e)
     {
         if (!TryGetAmount(out var amount)) return;
+        ProcessOperation(amount, isWithdrawal: true);
+    }
 
+    private void ProcessOperation(decimal amount, bool isWithdrawal)
+    {
         try
         {
-            _account!.Withdraw(amount);
+            var input = _account!.BuildTransactionInput(amount, isWithdrawal);
+            var check = _fraudDetector.Check(input);
+
+            if (check.IsFraud)
+            {
+                var action = isWithdrawal ? "снятие" : "пополнение";
+                var answer = MessageBox.Show(
+                    $"⚠ Подозрительная операция ({action})!\n\n" +
+                    $"Риск мошенничества: {check.RiskPercent}%\n" +
+                    $"{check.Reason}\n\n" +
+                    "Всё равно выполнить операцию?",
+                    "Проверка ML.NET",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (answer == DialogResult.No)
+                {
+                    txtLog.AppendText($"[{DateTime.Now:HH:mm:ss}] Операция отменена (риск {check.RiskPercent}%){Environment.NewLine}");
+                    return;
+                }
+            }
+
+            if (isWithdrawal)
+                _account.Withdraw(amount);
+            else
+                _account.Deposit(amount);
+
             UpdateBalance();
-            txtLog.AppendText($"[{DateTime.Now:HH:mm:ss}] -{amount:F2} ₽ (снятие){Environment.NewLine}");
+
+            var sign = isWithdrawal ? "-" : "+";
+            var label = isWithdrawal ? "снятие" : "пополнение";
+            var riskInfo = check.IsFraud ? $" [риск {check.RiskPercent}%]" : " [ок]";
+            txtLog.AppendText($"[{DateTime.Now:HH:mm:ss}] {sign}{amount:F2} ₽ ({label}){riskInfo}{Environment.NewLine}");
         }
         catch (Exception ex)
         {
