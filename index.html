@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FicWave — фанфики и блог для авторов</title>
+    <meta
+      name="description"
+      content="FicWave — прототип сайта для чтения фанфиков, публикации работ и ведения авторского блога в стиле Twitter."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#home" aria-label="FicWave главная">
+          <span class="brand__mark">FW</span>
+          <span>
+            <strong>FicWave</strong>
+            <small>фанфики + блог</small>
+          </span>
+        </a>
+
+        <nav class="nav" aria-label="Основная навигация">
+          <a class="nav__link active" href="#home" data-route="home">Главная</a>
+          <a class="nav__link" href="#catalog" data-route="catalog">Каталог</a>
+          <a class="nav__link" href="#write" data-route="write">Написать</a>
+          <a class="nav__link" href="#profile" data-route="profile">Профиль</a>
+        </nav>
+
+        <div class="current-user-card">
+          <span class="eyebrow">Вы вошли как</span>
+          <label class="sr-only" for="user-switcher">Выберите пользователя</label>
+          <select id="user-switcher"></select>
+          <p id="current-user-bio"></p>
+        </div>
+      </aside>
+
+      <main class="main">
+        <section class="hero">
+          <div>
+            <span class="eyebrow">MVP социальной платформы</span>
+            <h1>Публикуйте фанфики, ведите блог и собирайте читателей в одном месте.</h1>
+            <p>
+              Каталог работ, главы, отзывы, избранное, профили авторов и быстрая лента
+              постов — все в одном интерфейсе.
+            </p>
+            <div class="hero__actions">
+              <a class="button button--primary" href="#write">Опубликовать работу</a>
+              <a class="button button--ghost" href="#catalog">Читать каталог</a>
+            </div>
+          </div>
+          <div class="hero__stats" aria-label="Статистика платформы">
+            <article>
+              <strong id="stat-stories">0</strong>
+              <span>работ</span>
+            </article>
+            <article>
+              <strong id="stat-posts">0</strong>
+              <span>постов</span>
+            </article>
+            <article>
+              <strong id="stat-users">0</strong>
+              <span>авторов</span>
+            </article>
+          </div>
+        </section>
+
+        <section class="toolbar" aria-label="Фильтры каталога">
+          <div class="search">
+            <label class="sr-only" for="search-input">Поиск</label>
+            <input id="search-input" type="search" placeholder="Поиск по названию, фандому, тегам..." />
+          </div>
+          <label class="sr-only" for="fandom-filter">Фандом</label>
+          <select id="fandom-filter">
+            <option value="">Все фандомы</option>
+          </select>
+          <label class="sr-only" for="rating-filter">Рейтинг</label>
+          <select id="rating-filter">
+            <option value="">Все рейтинги</option>
+            <option value="G">G</option>
+            <option value="PG-13">PG-13</option>
+            <option value="R">R</option>
+          </select>
+        </section>
+
+        <section class="view active" id="view-home" data-view="home">
+          <div class="grid grid--feed">
+            <section class="panel">
+              <div class="panel__header">
+                <div>
+                  <span class="eyebrow">Twitter-like блог</span>
+                  <h2>Лента авторов и читателей</h2>
+                </div>
+              </div>
+
+              <form class="composer" id="post-form">
+                <label for="post-body">Новый пост</label>
+                <textarea
+                  id="post-body"
+                  maxlength="280"
+                  placeholder="Расскажите о новой главе, идее или любимой работе..."
+                  required
+                ></textarea>
+                <div class="composer__footer">
+                  <span><span id="post-counter">0</span>/280</span>
+                  <button class="button button--primary" type="submit">Запостить</button>
+                </div>
+              </form>
+
+              <div class="feed" id="feed-list"></div>
+            </section>
+
+            <aside class="panel panel--sticky">
+              <div class="panel__header">
+                <div>
+                  <span class="eyebrow">Сейчас читают</span>
+                  <h2>Популярное</h2>
+                </div>
+              </div>
+              <div class="trending" id="trending-list"></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="view-catalog" data-view="catalog">
+          <div class="panel">
+            <div class="panel__header">
+              <div>
+                <span class="eyebrow">Каталог как на фикбуке</span>
+                <h2>Работы</h2>
+              </div>
+              <button class="button button--ghost" id="reset-data" type="button">Сбросить демо</button>
+            </div>
+            <div class="story-grid" id="story-list"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-write" data-view="write">
+          <div class="grid grid--write">
+            <section class="panel">
+              <div class="panel__header">
+                <div>
+                  <span class="eyebrow">Кабинет автора</span>
+                  <h2>Новая работа</h2>
+                </div>
+              </div>
+              <form class="story-form" id="story-form">
+                <div class="form-row">
+                  <label>
+                    Название
+                    <input name="title" type="text" placeholder="Например: Письма из другого мира" required />
+                  </label>
+                  <label>
+                    Фандом
+                    <input name="fandom" type="text" placeholder="Ориджинал, Гарри Поттер..." required />
+                  </label>
+                </div>
+                <div class="form-row">
+                  <label>
+                    Рейтинг
+                    <select name="rating" required>
+                      <option value="G">G</option>
+                      <option value="PG-13">PG-13</option>
+                      <option value="R">R</option>
+                    </select>
+                  </label>
+                  <label>
+                    Статус
+                    <select name="status" required>
+                      <option value="В процессе">В процессе</option>
+                      <option value="Завершен">Завершен</option>
+                      <option value="Заморожен">Заморожен</option>
+                    </select>
+                  </label>
+                </div>
+                <label>
+                  Теги через запятую
+                  <input name="tags" type="text" placeholder="романтика, приключения, hurt/comfort" />
+                </label>
+                <label>
+                  Краткое описание
+                  <textarea name="summary" rows="3" placeholder="О чем ваша история?" required></textarea>
+                </label>
+                <label>
+                  Первая глава
+                  <textarea
+                    name="chapter"
+                    rows="9"
+                    placeholder="Текст первой главы..."
+                    required
+                  ></textarea>
+                </label>
+                <button class="button button--primary" type="submit">Опубликовать фанфик</button>
+              </form>
+            </section>
+
+            <aside class="panel">
+              <div class="panel__header">
+                <div>
+                  <span class="eyebrow">Подсказки</span>
+                  <h2>Что уже есть</h2>
+                </div>
+              </div>
+              <ul class="feature-list">
+                <li>Профили авторов и переключение текущего аккаунта.</li>
+                <li>Каталог с поиском, фандомами, рейтингами и тегами.</li>
+                <li>Публикация работ с первой главой прямо из браузера.</li>
+                <li>Блог-посты до 280 символов, лайки и репосты.</li>
+                <li>Отзывы, избранное и сохранение состояния в localStorage.</li>
+              </ul>
+            </aside>
+          </div>
+        </section>
+
+        <section class="view" id="view-profile" data-view="profile">
+          <div class="profile-layout">
+            <section class="panel profile-card" id="profile-card"></section>
+            <section class="panel">
+              <div class="panel__header">
+                <div>
+                  <span class="eyebrow">Активность</span>
+                  <h2>Работы и посты профиля</h2>
+                </div>
+              </div>
+              <div id="profile-activity"></div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="story-dialog" class="story-dialog">
+      <button class="dialog-close" type="button" aria-label="Закрыть">×</button>
+      <article id="story-detail"></article>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
