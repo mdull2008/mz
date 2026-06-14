@@ -1,0 +1,38 @@
+{
+  "name": "ficbook-social",
+  "version": "1.0.0",
+  "description": "A fanfiction platform prototype with social microblogging features.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdull2008/mz.git"
+  },
+  "keywords": [
+    "fanfiction",
+    "social",
+    "react",
+    "vite"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mdull2008/mz/issues"
+  },
+  "homepage": "https://github.com/mdull2008/mz#readme",
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16"
+  }
+}
