@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="480"
+        d:DesignHeight="360"
+        x:Class="Mz.Avalonia.MainWindow"
+        Title="Форма"
+        Width="480"
+        Height="360"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="24" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+        <TextBlock Grid.Row="0"
+                   Text="Контактная форма"
+                   FontSize="22"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,16" />
+
+        <StackPanel Grid.Row="1" Spacing="6" Margin="0,0,0,12">
+            <TextBlock Text="Имя" />
+            <TextBox x:Name="NameTextBox" PlaceholderText="Введите имя" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Spacing="6" Margin="0,0,0,12">
+            <TextBlock Text="Email" />
+            <TextBox x:Name="EmailTextBox" PlaceholderText="example@mail.com" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Spacing="6" Margin="0,0,0,12">
+            <TextBlock Text="Сообщение" />
+            <TextBox x:Name="MessageTextBox"
+                     PlaceholderText="Введите сообщение"
+                     AcceptsReturn="True"
+                     Height="80" />
+        </StackPanel>
+
+        <Border Grid.Row="4"
+                Background="#F3F4F6"
+                CornerRadius="8"
+                Padding="12"
+                Margin="0,0,0,16">
+            <TextBlock x:Name="StatusTextBlock"
+                       Text="Заполните форму и нажмите «Сохранить»."
+                       TextWrapping="Wrap" />
+        </Border>
+
+        <StackPanel Grid.Row="5"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="12">
+            <Button x:Name="ClearButton"
+                    Content="Очистить"
+                    Width="120"
+                    Click="OnClearClick" />
+            <Button x:Name="SaveButton"
+                    Content="Сохранить"
+                    Width="120"
+                    Click="OnSaveClick" />
+        </StackPanel>
+    </Grid>
+</Window>
