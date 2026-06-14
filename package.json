@@ -9,6 +9,7 @@
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",
     "db:seed": "npx tsx prisma/seed.ts",
+    "pack": "bash scripts/pack.sh",
     "postinstall": "prisma generate"
   },
   "prisma": {

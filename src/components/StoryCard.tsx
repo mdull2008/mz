@@ -6,6 +6,7 @@ type StoryCardProps = {
     id: string;
     title: string;
     summary: string;
+    cover: string;
     fandom: string;
     rating: string;
     status: string;
@@ -22,7 +23,20 @@ export default function StoryCard({ story }: StoryCardProps) {
 
   return (
     <article className="card hover:bg-card-hover transition-colors">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start gap-4">
+        <Link href={`/stories/${story.id}`} className="shrink-0">
+          {story.cover ? (
+            <img
+              src={story.cover}
+              alt={story.title}
+              className="w-20 h-28 object-cover rounded-xl border border-border"
+            />
+          ) : (
+            <div className="w-20 h-28 rounded-xl bg-gradient-to-br from-primary/40 to-accent/40 border border-border flex items-center justify-center text-2xl">
+              📖
+            </div>
+          )}
+        </Link>
         <div className="flex-1 min-w-0">
           <Link href={`/stories/${story.id}`} className="group">
             <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">

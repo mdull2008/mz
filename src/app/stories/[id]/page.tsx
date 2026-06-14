@@ -9,6 +9,7 @@ import {
   addChapterAction,
 } from "@/lib/actions";
 import CommentForm from "@/components/CommentForm";
+import CoverUpload from "@/components/CoverUpload";
 
 type Params = Promise<{ id: string }>;
 
@@ -61,6 +62,19 @@ export default async function StoryPage({ params }: { params: Params }) {
       </Link>
 
       <header className="mt-4">
+        <div className="flex flex-col sm:flex-row gap-6">
+          {story.cover ? (
+            <img
+              src={story.cover}
+              alt={story.title}
+              className="w-40 h-56 object-cover rounded-2xl border border-border shrink-0"
+            />
+          ) : (
+            <div className="w-40 h-56 rounded-2xl bg-gradient-to-br from-primary/40 to-accent/40 border border-border flex items-center justify-center text-4xl shrink-0">
+              📖
+            </div>
+          )}
+          <div className="flex-1">
         <h1 className="text-3xl font-bold">{story.title}</h1>
         <p className="text-muted mt-2">
           Автор:{" "}
@@ -115,7 +129,15 @@ export default async function StoryPage({ params }: { params: Params }) {
             </>
           )}
         </div>
+          </div>
+        </div>
       </header>
+
+      {isAuthor && (
+        <section className="mt-6">
+          <CoverUpload storyId={story.id} currentCover={story.cover || undefined} />
+        </section>
+      )}
 
       <section className="mt-10">
         <h2 className="text-xl font-semibold mb-4">Оглавление</h2>

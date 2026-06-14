@@ -17,14 +17,18 @@ model User {
   avatar      String   @default("")
   createdAt   DateTime @default(now())
 
-  posts            Post[]
-  stories          Story[]
-  comments         Comment[]
-  postLikes        PostLike[]
-  storyLikes       StoryLike[]
-  bookmarks        Bookmark[]
-  followers        Follow[]  @relation("Following")
-  following        Follow[]  @relation("Follower")
+  posts             Post[]
+  stories           Story[]
+  comments          Comment[]
+  postLikes         PostLike[]
+  storyLikes        StoryLike[]
+  bookmarks         Bookmark[]
+  followers         Follow[]       @relation("Following")
+  following         Follow[]       @relation("Follower")
+  notifications     Notification[] @relation("UserNotifications")
+  triggeredNotifs   Notification[] @relation("NotificationActor")
+  sentMessages      Message[]      @relation("SentMessages")
+  receivedMessages  Message[]      @relation("ReceivedMessages")
 }
 
 model Follow {
@@ -67,6 +71,7 @@ model Story {
   userId    String
   title     String
   summary   String
+  cover     String   @default("")
   fandom    String
   rating    String   @default("T")
   status    String   @default("ongoing")
@@ -75,7 +80,7 @@ model Story {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   chapters  Chapter[]
   likes     StoryLike[]
   bookmarks Bookmark[]
@@ -135,4 +140,35 @@ model Comment {
   post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   story   Story?   @relation(fields: [storyId], references: [id], onDelete: Cascade)
   chapter Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  actorId   String?
+  type      String
+  message   String
+  link      String   @default("")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user  User  @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  actor User? @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([userId, read])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  content    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([senderId, receiverId])
+  @@index([receiverId, read])
 }

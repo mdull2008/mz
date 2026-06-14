@@ -12,6 +12,8 @@ import {
   verifyPassword,
 } from "@/lib/auth";
 import { countWords } from "@/lib/utils";
+import { saveCoverImage } from "@/lib/upload";
+import { createNotification } from "@/lib/notifications";
 
 export async function registerAction(formData: FormData) {
   const email = String(formData.get("email") || "").trim().toLowerCase();
@@ -123,9 +125,23 @@ export async function togglePostLikeAction(postId: string): Promise<void> {
     await prisma.postLike.create({
       data: { userId: session.id, postId },
     });
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      include: { user: { select: { id: true } } },
+    });
+    if (post && post.userId !== session.id) {
+      await createNotification({
+        userId: post.userId,
+        actorId: session.id,
+        type: "like_post",
+        message: `${session.displayName} понравился ваш пост`,
+        link: "/feed",
+      });
+    }
   }
 
   revalidatePath("/feed");
+  revalidatePath("/notifications");
 }
 
 export async function toggleFollowAction(username: string): Promise<void> {
@@ -149,10 +165,18 @@ export async function toggleFollowAction(username: string): Promise<void> {
     await prisma.follow.create({
       data: { followerId: session.id, followingId: target.id },
     });
+    await createNotification({
+      userId: target.id,
+      actorId: session.id,
+      type: "follow",
+      message: `${session.displayName} подписался(ась) на вас`,
+      link: `/profile/${session.username}`,
+    });
   }
 
   revalidatePath(`/profile/${username}`);
   revalidatePath("/feed");
+  revalidatePath("/notifications");
 }
 
 export async function createStoryAction(formData: FormData): Promise<void> {
@@ -169,11 +193,19 @@ export async function createStoryAction(formData: FormData): Promise<void> {
 
   if (!title || !summary || !fandom || !chapterContent) return;
 
+  const coverFile = formData.get("cover");
+  let cover = "";
+  if (coverFile instanceof File) {
+    const saved = await saveCoverImage(coverFile);
+    if (saved) cover = saved;
+  }
+
   const story = await prisma.story.create({
     data: {
       userId: session.id,
       title,
       summary,
+      cover,
       fandom,
       rating,
       status,
@@ -219,12 +251,30 @@ export async function addChapterAction(storyId: string, formData: FormData): Pro
     },
   });
 
+  const followers = await prisma.follow.findMany({
+    where: { followingId: session.id },
+    select: { followerId: true },
+  });
+
+  await Promise.all(
+    followers.map((f) =>
+      createNotification({
+        userId: f.followerId,
+        actorId: session.id,
+        type: "new_chapter",
+        message: `${session.displayName} опубликовал(а) главу «${title}»`,
+        link: `/stories/${storyId}`,
+      })
+    )
+  );
+
   await prisma.story.update({
     where: { id: storyId },
     data: { updatedAt: new Date() },
   });
 
   revalidatePath(`/stories/${storyId}`);
+  revalidatePath("/notifications");
   redirect(`/stories/${storyId}`);
 }
 
@@ -241,10 +291,24 @@ export async function toggleStoryLikeAction(storyId: string): Promise<void> {
     await prisma.storyLike.create({
       data: { userId: session.id, storyId },
     });
+    const story = await prisma.story.findUnique({
+      where: { id: storyId },
+      select: { userId: true, title: true },
+    });
+    if (story && story.userId !== session.id) {
+      await createNotification({
+        userId: story.userId,
+        actorId: session.id,
+        type: "like_story",
+        message: `${session.displayName} понравился фанфик «${story.title}»`,
+        link: `/stories/${storyId}`,
+      });
+    }
   }
 
   revalidatePath(`/stories/${storyId}`);
   revalidatePath("/stories");
+  revalidatePath("/notifications");
 }
 
 export async function toggleBookmarkAction(storyId: string): Promise<void> {
@@ -274,7 +338,7 @@ export async function addCommentAction(formData: FormData) {
 
   if (!content) return { error: "Комментарий не может быть пустым" };
 
-  await prisma.comment.create({
+  const comment = await prisma.comment.create({
     data: {
       userId: session.id,
       content,
@@ -283,6 +347,50 @@ export async function addCommentAction(formData: FormData) {
       chapterId,
     },
   });
+
+  if (postId) {
+    const post = await prisma.post.findUnique({ where: { id: postId } });
+    if (post && post.userId !== session.id) {
+      await createNotification({
+        userId: post.userId,
+        actorId: session.id,
+        type: "comment",
+        message: `${session.displayName} прокомментировал(а) ваш пост`,
+        link: "/feed",
+      });
+    }
+  }
+
+  if (storyId) {
+    const story = await prisma.story.findUnique({ where: { id: storyId } });
+    if (story && story.userId !== session.id) {
+      await createNotification({
+        userId: story.userId,
+        actorId: session.id,
+        type: "comment",
+        message: `${session.displayName} оставил(а) комментарий к «${story.title}»`,
+        link: `/stories/${storyId}`,
+      });
+    }
+  }
+
+  if (chapterId) {
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: chapterId },
+      include: { story: { select: { userId: true, title: true, id: true } } },
+    });
+    if (chapter && chapter.story.userId !== session.id) {
+      await createNotification({
+        userId: chapter.story.userId,
+        actorId: session.id,
+        type: "comment",
+        message: `${session.displayName} прокомментировал(а) главу «${chapter.title}»`,
+        link: `/stories/${chapter.story.id}/chapter/${chapterId}`,
+      });
+    }
+  }
+
+  void comment;
 
   if (postId) revalidatePath("/feed");
   if (storyId) revalidatePath(`/stories/${storyId}`);
@@ -293,6 +401,7 @@ export async function addCommentAction(formData: FormData) {
     if (chapter) revalidatePath(`/stories/${chapter.storyId}/chapter/${chapterId}`);
   }
 
+  revalidatePath("/notifications");
   return { success: true };
 }
 
@@ -310,4 +419,93 @@ export async function updateProfileAction(formData: FormData): Promise<void> {
   });
 
   revalidatePath(`/profile/${session.username}`);
+}
+
+export async function uploadStoryCoverAction(storyId: string, formData: FormData): Promise<void> {
+  const session = await requireSession();
+
+  const story = await prisma.story.findUnique({ where: { id: storyId } });
+  if (!story || story.userId !== session.id) return;
+
+  const coverFile = formData.get("cover");
+  if (!(coverFile instanceof File)) return;
+
+  const saved = await saveCoverImage(coverFile);
+  if (!saved) return;
+
+  await prisma.story.update({
+    where: { id: storyId },
+    data: { cover: saved },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath("/stories");
+}
+
+export async function sendMessageAction(formData: FormData) {
+  const session = await requireSession();
+  const receiverUsername = String(formData.get("receiver") || "").trim().toLowerCase();
+  const content = String(formData.get("content") || "").trim();
+
+  if (!receiverUsername || !content || content.length > 2000) {
+    return { error: "Сообщение должно быть от 1 до 2000 символов" };
+  }
+
+  const receiver = await prisma.user.findUnique({
+    where: { username: receiverUsername },
+  });
+
+  if (!receiver || receiver.id === session.id) {
+    return { error: "Пользователь не найден" };
+  }
+
+  await prisma.message.create({
+    data: {
+      senderId: session.id,
+      receiverId: receiver.id,
+      content,
+    },
+  });
+
+  await createNotification({
+    userId: receiver.id,
+    actorId: session.id,
+    type: "message",
+    message: `${session.displayName} отправил(а) вам сообщение`,
+    link: `/messages/${session.username}`,
+  });
+
+  revalidatePath("/messages");
+  revalidatePath(`/messages/${receiverUsername}`);
+  revalidatePath("/notifications");
+  return { success: true };
+}
+
+export async function markNotificationsReadAction(): Promise<void> {
+  const session = await requireSession();
+
+  await prisma.notification.updateMany({
+    where: { userId: session.id, read: false },
+    data: { read: true },
+  });
+
+  revalidatePath("/notifications");
+}
+
+export async function markConversationReadAction(username: string): Promise<void> {
+  const session = await requireSession();
+  const other = await prisma.user.findUnique({ where: { username } });
+  if (!other) return;
+
+  await prisma.message.updateMany({
+    where: {
+      senderId: other.id,
+      receiverId: session.id,
+      read: false,
+    },
+    data: { read: true },
+  });
+
+  revalidatePath("/messages");
+  revalidatePath(`/messages/${username}`);
 }

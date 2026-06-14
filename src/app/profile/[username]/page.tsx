@@ -71,7 +71,12 @@ export default async function ProfilePage({ params }: { params: Params }) {
                 <p className="text-muted">@{user.username}</p>
               </div>
               {session && !isOwnProfile && (
-                <FollowButton username={user.username} isFollowing={isFollowing} />
+                <div className="flex gap-2">
+                  <FollowButton username={user.username} isFollowing={isFollowing} />
+                  <Link href={`/messages/${user.username}`} className="btn-secondary text-sm">
+                    ✉️ Написать
+                  </Link>
+                </div>
               )}
             </div>
             {user.bio && <p className="mt-3 text-foreground/80">{user.bio}</p>}
