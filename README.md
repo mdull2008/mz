@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FicPulse
 
-## Getting Started
+**FicPulse** — социальная платформа для фанфиков, объединяющая возможности Фикбука и Twitter.
 
-First, run the development server:
+## Возможности
+
+- **Фанфики** — многостраничные истории с главами, фандомами, рейтингами, тегами
+- **Лента** — короткие посты как в Twitter, лайки, подписки
+- **Профили** — блог автора, список работ, био, подписчики
+- **Комментарии** — к постам, историям и отдельным главам
+- **Закладки** — сохраняйте любимые фанфики
+- **Поиск** — по названию, фандому, статусу
+
+## Быстрый старт
 
 ```bash
+npm install
+npx prisma migrate dev
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Демо-аккаунты
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Логин | Пароль |
+|-------|--------|
+| `anna_writer` | `demo123` |
+| `max_reader` | `demo123` |
 
-## Learn More
+## Стек
 
-To learn more about Next.js, take a look at the following resources:
+- Next.js 16 (App Router)
+- TypeScript
+- Tailwind CSS 4
+- Prisma + SQLite
+- JWT-авторизация
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Страницы
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Путь | Описание |
+|------|----------|
+| `/` | Главная |
+| `/feed` | Лента постов |
+| `/stories` | Каталог фанфиков |
+| `/write` | Написать фанфик |
+| `/profile/[username]` | Профиль пользователя |
+| `/stories/[id]` | Страница фанфика |
+| `/stories/[id]/chapter/[chapterId]` | Чтение главы |
+| `/login` | Вход |
+| `/register` | Регистрация |

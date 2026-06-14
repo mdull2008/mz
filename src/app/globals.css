@@ -1,26 +1,77 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0c0a12;
+  --foreground: #f0ecf7;
+  --card: #161222;
+  --card-hover: #1e1830;
+  --border: #2a2340;
+  --primary: #a855f7;
+  --primary-hover: #9333ea;
+  --accent: #ec4899;
+  --muted: #8b7fa8;
+  --success: #34d399;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-success: var(--success);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass {
+  background: rgba(22, 18, 34, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-primary-hover text-white font-medium px-4 py-2 rounded-xl transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-card hover:bg-card-hover border border-border text-foreground font-medium px-4 py-2 rounded-xl transition-colors;
+}
+
+.input-field {
+  @apply w-full bg-card border border-border rounded-xl px-4 py-2.5 text-foreground placeholder:text-muted focus:outline-none focus:border-primary transition-colors;
+}
+
+textarea.input-field {
+  @apply resize-y min-h-[100px];
+}
+
+.card {
+  @apply bg-card border border-border rounded-2xl p-5;
+}
+
+.tag {
+  @apply inline-block text-xs px-2.5 py-1 rounded-full bg-primary/15 text-primary border border-primary/30;
+}
+
+.prose-story {
+  @apply leading-relaxed text-[17px] text-foreground/90;
+  white-space: pre-wrap;
 }

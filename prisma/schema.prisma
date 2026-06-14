@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  username    String   @unique
+  password    String
+  displayName String
+  bio         String   @default("")
+  avatar      String   @default("")
+  createdAt   DateTime @default(now())
+
+  posts            Post[]
+  stories          Story[]
+  comments         Comment[]
+  postLikes        PostLike[]
+  storyLikes       StoryLike[]
+  bookmarks        Bookmark[]
+  followers        Follow[]  @relation("Following")
+  following        Follow[]  @relation("Follower")
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  userId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes    PostLike[]
+  comments Comment[]
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model Story {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  summary   String
+  fandom    String
+  rating    String   @default("T")
+  status    String   @default("ongoing")
+  tags      String   @default("")
+  language  String   @default("ru")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chapters  Chapter[]
+  likes     StoryLike[]
+  bookmarks Bookmark[]
+  comments  Comment[]
+}
+
+model Chapter {
+  id        String   @id @default(cuid())
+  storyId   String
+  number    Int
+  title     String
+  content   String
+  wordCount Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  story    Story     @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  comments Comment[]
+
+  @@unique([storyId, number])
+}
+
+model StoryLike {
+  id        String   @id @default(cuid())
+  userId    String
+  storyId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storyId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  storyId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, storyId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  userId    String
+  content   String
+  postId    String?
+  storyId   String?
+  chapterId String?
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post    Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  story   Story?   @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  chapter Chapter? @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+}
