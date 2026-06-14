@@ -118,4 +118,10 @@ public partial class MainForm : Form
     {
         lblBalance.Text = $"Баланс: {_account!.Balance:F2} ₽";
     }
+
+    private void btnOffers_Click(object sender, EventArgs e)
+    {
+        using var form = new OffersForm();
+        form.ShowDialog();
+    }
 }

@@ -141,6 +141,13 @@ partial class MainForm
         StartPosition = FormStartPosition.CenterScreen;
         Text = "ProjectBAnk";
 
+        btnOffers = new Button();
+        btnOffers.Location = new Point(270, 115);
+        btnOffers.Size = new Size(120, 27);
+        btnOffers.Text = "Предложения";
+        btnOffers.Click += btnOffers_Click;
+        Controls.Add(btnOffers);
+
         grpOperations.ResumeLayout(false);
         grpOperations.PerformLayout();
         ResumeLayout(false);
@@ -162,4 +169,5 @@ partial class MainForm
     private Button btnWithdraw;
     private Label lblLog;
     private TextBox txtLog;
+    private Button btnOffers;
 }
