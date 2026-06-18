@@ -1,0 +1,25 @@
+<Window x:Class="NonRectWpf.StarWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Star"
+        Width="320" Height="320"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        ResizeMode="NoResize">
+    <Grid MouseLeftButtonDown="DragWindow">
+        <Path Fill="#FF5722" Stroke="#BF360C" StrokeThickness="2"
+              Data="M160,20 L195,110 L290,110 L215,170 L245,260 L160,205 L75,260 L105,170 L30,110 L125,110 Z">
+            <Path.Effect>
+                <DropShadowEffect BlurRadius="12" ShadowDepth="3"/>
+            </Path.Effect>
+        </Path>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,20,0,0">
+            <TextBlock Text="Звезда" Foreground="White" FontSize="20"
+                       HorizontalAlignment="Center"/>
+            <Button Content="Закрыть" Margin="0,10,0,0" Padding="20,5"
+                    Click="Close_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

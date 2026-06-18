@@ -1,0 +1,19 @@
+<Window x:Class="NonRectWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="NonRect WPF"
+        Width="420" Height="320"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        ResizeMode="NoResize">
+    <Grid>
+        <Button Content="Круг" Width="100" Height="40" Margin="10"
+                HorizontalAlignment="Left" VerticalAlignment="Top"
+                Click="Circle_Click"/>
+        <Button Content="Звезда" Width="100" Height="40" Margin="10,60,10,10"
+                HorizontalAlignment="Left" VerticalAlignment="Top"
+                Click="Star_Click"/>
+    </Grid>
+</Window>
