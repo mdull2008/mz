@@ -1,0 +1,15 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="AvaloniaApp.MainWindow"
+        Title="Avalonia App"
+        Width="400" Height="300"
+        WindowStartupLocation="CenterScreen">
+    <StackPanel Margin="20" Spacing="15">
+        <TextBlock x:Name="StatusText" Text="Нажмите кнопку" FontSize="16"/>
+
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button Content="Привет" Width="120" Click="Hello_Click"/>
+            <Button Content="Очистить" Width="120" Click="Clear_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>
