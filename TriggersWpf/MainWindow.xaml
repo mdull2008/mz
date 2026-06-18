@@ -1,0 +1,78 @@
+<Window x:Class="TriggersWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="WPF Triggers"
+        Width="520" Height="420"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <!-- Trigger: IsMouseOver -->
+        <Style x:Key="HoverButton" TargetType="Button">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="20,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1565C0"/>
+                    <Setter Property="FontSize" Value="16"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#0D47A1"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- DataTrigger: по значению CheckBox -->
+        <Style x:Key="StatusBox" TargetType="Border">
+            <Setter Property="Background" Value="#FFCDD2"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="15"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChecked, ElementName=ToggleCheck}" Value="True">
+                    <Setter Property="Background" Value="#C8E6C9"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <StackPanel Margin="25" VerticalAlignment="Center">
+        <TextBlock Text="Примеры триггеров WPF" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+
+        <!-- 1. Property Trigger -->
+        <TextBlock Text="1. Trigger — наведение на кнопку" Margin="0,0,0,8"/>
+        <Button Content="Наведи мышь" Style="{StaticResource HoverButton}" Margin="0,0,0,20"/>
+
+        <!-- 2. DataTrigger -->
+        <TextBlock Text="2. DataTrigger — цвет по CheckBox" Margin="0,0,0,8"/>
+        <CheckBox x:Name="ToggleCheck" Content="Включить режим" Margin="0,0,0,8"/>
+        <Border Style="{StaticResource StatusBox}" Margin="0,0,0,20">
+            <TextBlock Text="Статус меняется при галочке"/>
+        </Border>
+
+        <!-- 3. EventTrigger (анимация) -->
+        <TextBlock Text="3. EventTrigger — анимация при клике" Margin="0,0,0,8"/>
+        <Border x:Name="AnimBox" Width="120" Height="50" Background="#FF9800"
+                CornerRadius="8" HorizontalAlignment="Left" Cursor="Hand">
+            <Border.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Width"
+                                             To="180" Duration="0:0:0.3"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Width"
+                                             To="120" Duration="0:0:0.3"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Border.Triggers>
+            <TextBlock Text="Наведи" Foreground="White"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Border>
+    </StackPanel>
+</Window>
